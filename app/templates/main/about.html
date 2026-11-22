@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}About us{% endblock %}
+{% block content %}
+
+<header class="page-hero">
+  <div class="container">
+    <p class="section__eyebrow">About AnnaSetu</p>
+    <h1>Food should reach the people who need it, not the bin.</h1>
+    <p class="section__lead">AnnaSetu connects surplus food with the people and organisations who can put it to good use.</p>
+  </div>
+</header>
+
+<section class="section section--tint">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10">
+        <p class="section__eyebrow">The context</p>
+        <h2 class="section__title">The problem</h2>
+        <div class="prose">
+          <p>Edible surplus from canteens and hostel messes is often thrown away at the end of service, while community kitchens and NGOs often lack timely access to it and a simple way to find it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10">
+        <p class="section__eyebrow">How it works</p>
+        <h2 class="section__title">What AnnaSetu does</h2>
+        <div class="prose">
+          <p>Donors post surplus with a quick form, describing what is available, how much there is and when it can be collected.</p>
+          <p>Receivers see listings matched on distance, quantity and timing, so they can claim what they can realistically collect.</p>
+          <p>Volunteers and everyone else follow live status as each donation moves through Posted, Claimed, Volunteer assigned, Collected and Delivered.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="container">
+    <p class="section__eyebrow">Our community</p>
+    <h2 class="section__title">Who we serve</h2>
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("plate") }}</span>
+          <h3 class="h5">Donors</h3>
+          <p class="mb-0">Canteens and hostel messes with surplus food to share.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("heart") }}</span>
+          <h3 class="h5">Receivers</h3>
+          <p class="mb-0">NGOs and community kitchens that collect and distribute food.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("pin") }}</span>
+          <h3 class="h5">Volunteers</h3>
+          <p class="mb-0">People who help with pickups and deliveries.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="section__eyebrow">What guides us</p>
+    <h2 class="section__title">Our principles</h2>
+    <div class="row g-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("info") }}</span>
+          <h3 class="h5">Transparency</h3>
+          <p class="mb-0">Matching rules are explained in plain words.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("heart") }}</span>
+          <h3 class="h5">Dignity</h3>
+          <p class="mb-0">Food is offered respectfully, with clear labels.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("shield") }}</span>
+          <h3 class="h5">Food-safety awareness</h3>
+          <p class="mb-0">Guidance and deadlines appear on every listing.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card-soft h-100">
+          <span class="icon" aria-hidden="true">{{ icon("check") }}</span>
+          <h3 class="h5">Privacy</h3>
+          <p class="mb-0">No real addresses or personal details; demo data is fictional.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page-cta">
+  <div class="container">
+    <h2>See how food safety is guided</h2>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a class="btn-brand-outline" href="{{ url_for('main.food_safety') }}">Food safety guidelines</a>
+      <a class="btn-brand" href="{{ url_for('auth.register') }}">Create an account</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

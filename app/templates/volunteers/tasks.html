@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Volunteer tasks{% endblock %}
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">Pickup and delivery tasks</h1>
+    <p class="form-hint mb-0">Signed in as {{ current_user.name }}</p>
+  </div>
+
+  <div class="dash-grid mb-4">
+    <div class="dash-stat">
+      <p class="form-hint mb-1">Open tasks</p>
+      <p class="h3 fw-bold mb-0">{{ current|length }}</p>
+    </div>
+    <div class="dash-stat">
+      <p class="form-hint mb-1">Delivered</p>
+      <p class="h3 fw-bold mb-0">{{ history|length }}</p>
+    </div>
+  </div>
+
+  {% if current %}
+    <div class="row g-4 mb-4">
+      {% for row in current %}
+        {% set donation = row.donation %}
+        {% set a = row.assignment %}
+        <div class="col-12 col-lg-6">
+          <article class="card-soft h-100 d-flex flex-column">
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+              <h2 class="h5 fw-bold mb-0">{{ donation.title }}</h2>
+              <span class="status-pill status-{{ donation.status }}">{{ 'Ready to collect' if donation.status == 'assigned' else 'On the way' }}</span>
+            </div>
+            <dl class="row mb-3">
+              <dt class="col-5 form-label">Quantity</dt>
+              <dd class="col-7">{{ "%g"|format(donation.quantity) }} {{ donation.unit }}</dd>
+              <dt class="col-5 form-label">Collect from</dt>
+              <dd class="col-7">{{ row.donor_name }}<br><span class="form-hint">{{ donation.pickup_address }} ({{ donation.pickup_zone }})</span></dd>
+              <dt class="col-5 form-label">Deliver to</dt>
+              <dd class="col-7">{{ row.receiver_name or '—' }}</dd>
+              <dt class="col-5 form-label">Pickup by</dt>
+              <dd class="col-7">{{ donation.pickup_deadline|local_time }}</dd>
+              <dt class="col-5 form-label">Storage</dt>
+              <dd class="col-7">{{ donation.storage|capitalize }}{% if donation.allergens %} &middot; <span class="allergen-chip">Allergens: {{ donation.allergens }}</span>{% endif %}</dd>
+              <dt class="col-5 form-label">Assigned</dt>
+              <dd class="col-7">{{ a.assigned_at|local_time }}{% if a.collected_at %}<br><span class="form-hint">Collected {{ a.collected_at|local_time }}</span>{% endif %}</dd>
+            </dl>
+            <div class="d-flex flex-wrap gap-2 mt-auto">
+              {% if row.next_step == 'collected' %}
+                <form method="post" action="{{ url_for('volunteers.collect', donation_id=donation.id) }}" class="mb-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn-brand">Mark collected</button>
+                </form>
+              {% elif row.next_step == 'delivered' %}
+                <form method="post" action="{{ url_for('volunteers.deliver', donation_id=donation.id) }}" class="mb-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn-brand">Mark delivered</button>
+                </form>
+              {% endif %}
+              <a class="btn-brand-outline" href="{{ url_for('donations.detail', donation_id=donation.id) }}">Details</a>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="dash-empty text-center mb-4">
+      <div class="mb-3">{{ icon('volunteer') }}</div>
+      <h2 class="h5 fw-bold">No open tasks</h2>
+      <p class="text-muted mb-0">When an NGO assigns you a pickup it appears here. You then mark it collected and delivered as you go.</p>
+    </div>
+  {% endif %}
+
+  {% if history %}
+    <h2 class="h5 fw-bold mb-3">Completed</h2>
+    <div class="table-responsive mb-4">
+      <table class="table-soft table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Food</th>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
+            <th scope="col">Collected</th>
+            <th scope="col">Delivered</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in history %}
+            <tr>
+              <td>{{ row.donation.title }}</td>
+              <td>{{ row.donor_name }}</td>
+              <td>{{ row.receiver_name or '—' }}</td>
+              <td>{{ row.assignment.collected_at|local_time }}</td>
+              <td>{{ row.assignment.delivered_at|local_time }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  <div class="card-soft">
+    <h2 class="h6 fw-bold mb-3">Volunteer guidance</h2>
+    <ul class="list-unstyled mb-0">
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Wash your hands before handling any food.</span></li>
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Keep chilled food cold until it is delivered.</span></li>
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Collect before the pickup deadline.</span></li>
+      <li class="d-flex align-items-start gap-2">{{ icon('check') }} <span>Confirm the donor and receiver names on the listing.</span></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

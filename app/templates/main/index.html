@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Where surplus meets the hungry{% endblock %}
+{% block meta_description %}AnnaSetu links college canteens and hostel messes with nearby NGOs and community kitchens, so surplus meals reach people who need them.{% endblock %}
+{% block content %}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container">
+    <div class="hero__grid">
+      <div>
+        <p class="hero__eyebrow">Food rescue for canteens, messes and community kitchens</p>
+        <h1 class="hero__title" id="hero-title">Turn surplus meals into someone's next meal.</h1>
+        <p class="hero__copy">AnnaSetu links college canteens and hostel messes with nearby NGOs and community kitchens. Donors post a surplus in under a minute; receivers see what is available, with clear safety guidance and pickup deadlines.</p>
+        <div class="hero__actions">
+          <a class="btn btn-brand" href="{% if current_user and current_user.role == 'donor' %}{{ url_for('donations.donate') }}{% else %}{{ url_for('auth.login') }}{% endif %}">Donate Food</a>
+          <a class="btn btn-brand-outline" href="{% if current_user and current_user.role == 'receiver' %}{{ url_for('receivers.find_food') }}{% else %}{{ url_for('auth.login') }}{% endif %}">Find Food</a>
+        </div>
+        <p class="hero__volunteer-link mb-0">
+          <a class="nav-link-brand" href="{{ url_for('auth.register', role='volunteer') }}">Want to help with pickups? Join as a volunteer</a>
+        </p>
+      </div>
+      <div>
+        <img class="hero__art logo-full" src="{{ url_for('static', filename='img/AnnaSetu-transparent.png') }}" alt="AnnaSetu logo: hands offering a bowl, with the tagline where surplus meets the hungry" width="792" height="347">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" aria-labelledby="how-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-eyebrow">How it works</p>
+      <h2 class="section-title" id="how-title">Three steps from surplus to a shared meal</h2>
+    </header>
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <article class="step-card h-100">
+          <span class="step-card__num" aria-hidden="true">1</span>
+          <span class="step-card__icon">{{ icon("plate") }}</span>
+          <h3 class="step-card__title">Post the surplus</h3>
+          <p class="mb-0">A canteen or mess lists the food, quantity, ready time, storage type and pickup window in under a minute.</p>
+        </article>
+      </div>
+      <div class="col-12 col-md-4">
+        <article class="step-card h-100">
+          <span class="step-card__num" aria-hidden="true">2</span>
+          <span class="step-card__icon">{{ icon("donate") }}</span>
+          <h3 class="step-card__title">Claim it</h3>
+          <p class="mb-0">An NGO or community kitchen sees nearby listings, matched on distance, quantity and timing, and claims one.</p>
+        </article>
+      </div>
+      <div class="col-12 col-md-4">
+        <article class="step-card h-100">
+          <span class="step-card__num" aria-hidden="true">3</span>
+          <span class="step-card__icon">{{ icon("truck") }}</span>
+          <h3 class="step-card__title">Collect and deliver</h3>
+          <p class="mb-0">A volunteer picks it up and delivers, and everyone follows live status: Posted, Claimed, Volunteer assigned, Collected, Delivered.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="why-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-eyebrow">Why AnnaSetu</p>
+      <h2 class="section-title" id="why-title">Built around trust and food safety</h2>
+    </header>
+    <div class="row g-4">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <article class="feature-card h-100">
+          <span class="feature-card__icon">{{ icon("donate") }}</span>
+          <h3>Quick, clear donation form</h3>
+          <p class="mb-0">Post a listing in under a minute, with organisation details already filled in.</p>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <article class="feature-card h-100">
+          <span class="feature-card__icon">{{ icon("pin") }}</span>
+          <h3>Transparent matching</h3>
+          <p class="mb-0">The rules for distance, quantity and timing are explained in plain words.</p>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <article class="feature-card h-100">
+          <span class="feature-card__icon">{{ icon("clock") }}</span>
+          <h3>Live tracking</h3>
+          <p class="mb-0">Every status change is recorded with a timestamp.</p>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <article class="feature-card h-100">
+          <span class="feature-card__icon">{{ icon("shield") }}</span>
+          <h3>Safety guidance on every listing</h3>
+          <p class="mb-0">Storage type, time limits and allergen notes are shown before anyone claims food.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--deep" aria-labelledby="impact-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-eyebrow">Impact</p>
+      <h2 class="section-title" id="impact-title">Measured in meals, honestly</h2>
+      <p class="section-lead">The platform is a working demo, so we show no live totals yet. Impact figures will be calculated from completed deliveries and labelled clearly as estimates.</p>
+    </header>
+    <div class="impact-panel">
+      <span class="demo-label">Demo data only</span>
+      <ul class="impact-item list-unstyled mb-0">
+        <li>{{ icon("check") }} <span>Meals estimated from delivered quantities, using a stated conversion.</span></li>
+        <li>{{ icon("check") }} <span>Food diverted from landfill reported by weight, per donation.</span></li>
+        <li>{{ icon("check") }} <span>Every figure shows its assumptions and whether it is synthetic.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="impact-panel text-center">
+      <h2 class="section-title" id="cta-title">Ready to rescue surplus food?</h2>
+      <div class="hero__actions justify-content-center">
+        <a class="btn btn-brand" href="{{ url_for('auth.register', role='donor') }}">Register as a donor</a>
+        <a class="btn btn-brand-outline" href="{{ url_for('auth.register', role='receiver') }}">Register as an NGO or receiver</a>
+        <a class="btn btn-brand-outline" href="{{ url_for('auth.register', role='volunteer') }}">Join as a volunteer</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

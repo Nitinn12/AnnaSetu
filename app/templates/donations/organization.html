@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Organisation profile{% endblock %}
+{% block content %}
+{% set fv = fv or {} %}
+{% set selected_categories = fv.categories or [] %}
+<section class="container py-4 py-lg-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+
+      <nav class="mb-3" aria-label="Breadcrumb">
+        <a href="{{ url_for('main.dashboard') }}">&larr; Dashboard</a>
+      </nav>
+
+      <div class="card-soft">
+        <h1 class="h3 fw-bold">{% if is_new %}Add your organisation{% else %}Organisation profile{% endif %}</h1>
+        <p class="form-hint mb-4">
+          {% if is_receiver %}
+            Your organisation receives food. Set a capacity and the food categories you accept.
+          {% else %}
+            Your organisation donates food. Donations you post are linked to this profile.
+          {% endif %}
+          Zones and locations are synthetic demo data.
+        </p>
+
+        <form method="post" action="{{ url_for('donations.organization_profile') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="form-field">
+            <label for="name" class="form-label">Organisation name</label>
+            <input type="text" class="form-control" id="name" name="name" maxlength="120" required value="{{ fv.name or '' }}">
+          </div>
+
+          {% if is_new %}
+            <div class="form-field">
+              <label for="org_type" class="form-label">Organisation type</label>
+              <select class="form-select" id="org_type" name="org_type" required>
+                <option value="" disabled {% if not fv.org_type %}selected{% endif %}>Choose a type</option>
+                {% for value, label in org_types %}
+                  <option value="{{ value }}" {% if fv.org_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+
+          <div class="form-field">
+            <label for="zone_code" class="form-label">Zone</label>
+            <select class="form-select" id="zone_code" name="zone_code" required>
+              <option value="" disabled {% if not fv.zone_code %}selected{% endif %}>Choose a zone</option>
+              {% for code, label in zones %}
+                <option value="{{ code }}" {% if fv.zone_code == code %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <p class="form-hint">Zones are fictional, for the demo only.</p>
+          </div>
+
+          {% if is_receiver %}
+            <div class="form-field">
+              <label for="capacity_kg" class="form-label">Capacity per claim (kg, optional)</label>
+              <input type="number" class="form-control" id="capacity_kg" name="capacity_kg" min="1" max="100000" step="0.1" value="{{ fv.capacity_kg or '' }}">
+              <p class="form-hint">Leave blank for no limit.</p>
+            </div>
+
+            <fieldset class="form-field">
+              <legend class="form-label">Food categories you accept</legend>
+              <p class="form-hint">Leave all unticked to accept every category.</p>
+              {% for key, label in categories.items() %}
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="categories" id="cat-{{ key }}" value="{{ key }}"
+                    {% if key in selected_categories %}checked{% endif %}>
+                  <label class="form-check-label" for="cat-{{ key }}">{{ label }}</label>
+                </div>
+              {% endfor %}
+            </fieldset>
+          {% endif %}
+
+          <div class="form-actions d-flex flex-wrap gap-2 justify-content-end">
+            <a class="btn-brand-outline" href="{{ url_for('main.dashboard') }}">Cancel</a>
+            <button type="submit" class="btn-brand">{% if is_new %}Save organisation{% else %}Save changes{% endif %}</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

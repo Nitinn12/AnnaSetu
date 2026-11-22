@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+{% from "partials/icons.html" import icon %}
+{% set fv = form_values or {} %}
+
+<section class="auth-shell">
+  <div class="container">
+    <div class="row g-4 align-items-center justify-content-center">
+      <div class="d-none d-md-block col-md-5 col-lg-6">
+        <div class="auth-art">
+          <img class="auth-art__img logo-full" src="{{ url_for('static', filename='img/AnnaSetu-transparent.png') }}" alt="AnnaSetu logo" width="792" height="347">
+          <p class="auth-art__wordmark">AnnaSetu</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-7 col-lg-6">
+        <div class="auth-card auth-card--wide">
+          <h2 class="h3 fw-bold">Create your account</h2>
+          <p class="form-hint">Choose how you will use AnnaSetu. You can update your details later.</p>
+
+          <form method="post" action="{{ url_for('auth.register') }}" class="mt-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <fieldset class="form-field">
+              <legend class="form-label">I am joining as</legend>
+              <div class="role-options">
+                {% for value, label in roles %}
+                  {% if value == 'donor' %}
+                    {% set role_desc = "Canteens, hostel messes or households with surplus food" %}
+                    {% set role_icon = "donate" %}
+                  {% elif value == 'receiver' %}
+                    {% set role_desc = "NGOs and community kitchens that collect food" %}
+                    {% set role_icon = "find" %}
+                  {% elif value == 'volunteer' %}
+                    {% set role_desc = "Help with pickups and deliveries" %}
+                    {% set role_icon = "volunteer" %}
+                  {% else %}
+                    {% set role_desc = "" %}
+                    {% set role_icon = "donate" %}
+                  {% endif %}
+                  <div class="role-option">
+                    <input class="btn-check" type="radio" name="role" id="role-{{ value }}" value="{{ value }}"
+                      {% if (fv.role or selected_role) == value %}checked{% endif %} {% if loop.first %}required{% endif %}>
+                    <label class="role-option__card" for="role-{{ value }}">
+                      {{ icon(role_icon) }}
+                      <span class="role-option__title">{{ label }}</span>
+                      <span class="role-option__desc">{{ role_desc }}</span>
+                    </label>
+                  </div>
+                {% endfor %}
+              </div>
+            </fieldset>
+
+            <div class="form-field">
+              <label for="name" class="form-label">Full name</label>
+              <input type="text" class="form-control" id="name" name="name" required autocomplete="name" value="{{ fv.name or '' }}">
+            </div>
+
+            <div class="form-field">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required autocomplete="email" value="{{ fv.email or '' }}">
+            </div>
+
+            <div class="form-field">
+              <label for="organization_name" class="form-label">Organisation name (optional)</label>
+              <input type="text" class="form-control" id="organization_name" name="organization_name" autocomplete="organization" value="{{ fv.organization_name or '' }}">
+              <p class="form-hint">For example, your canteen, mess, NGO or kitchen. Leave blank if you are an individual volunteer.</p>
+            </div>
+
+            <div class="form-field">
+              <label for="password" class="form-label">Password</label>
+              <div class="password-field">
+                <input type="password" class="form-control" id="password" name="password" minlength="8" required autocomplete="new-password">
+                <button type="button" class="password-toggle" data-target="password" aria-label="Show password" aria-pressed="false">Show</button>
+              </div>
+              <p class="form-hint">At least 8 characters.</p>
+            </div>
+
+            <div class="form-field">
+              <label for="confirm_password" class="form-label">Confirm password</label>
+              <div class="password-field">
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" data-target="confirm_password" aria-label="Show password" aria-pressed="false">Show</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-brand w-100">Create account</button>
+          </form>
+
+          <p class="form-hint mt-4 mb-0">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

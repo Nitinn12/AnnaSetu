@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/volunteer_assign.html" import assign_cell %}
+{% block title %}Volunteer assignments{% endblock %}
+{% block content %}
+<section class="container py-4 py-lg-5">
+
+  <div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">Volunteer assignments</h1>
+    <p class="form-hint mb-0">Claimed donations that need a volunteer, and pickups in progress.</p>
+  </div>
+
+  {% if rows %}
+    <div class="table-responsive">
+      <table class="table-soft table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Food</th>
+            <th scope="col">From</th>
+            <th scope="col">Claimed by</th>
+            <th scope="col">Pickup by</th>
+            <th scope="col">Status</th>
+            <th scope="col">Volunteer</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            {% set donation = row.donation %}
+            <tr>
+              <td><a class="fw-semibold" href="{{ url_for('donations.detail', donation_id=donation.id) }}">{{ donation.title }}</a></td>
+              <td>{{ donation.organization.name }}</td>
+              <td>{{ row.claimed_by or '—' }}</td>
+              <td>{{ donation.pickup_deadline|local_time }}</td>
+              <td><span class="status-pill status-{{ donation.status }}">{{ donation.status|replace('assigned', 'volunteer assigned')|capitalize }}</span></td>
+              <td>{{ assign_cell(donation, volunteers, row.volunteer_name, row.can_assign, row.can_unassign) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="dash-empty text-center">
+      <div class="mb-3">{{ icon('volunteer') }}</div>
+      <h2 class="h5 fw-bold">Nothing to assign</h2>
+      <p class="text-muted mb-0">Claimed donations appear here once an NGO has claimed them.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "dashboard/_layout.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Volunteer dashboard{% endblock %}
+{% block dash_title %}Pickup and delivery tasks{% endblock %}
+{% block dash_body %}
+  <p class="text-muted mb-4">Signed in as {{ current_user.name }}</p>
+
+  <div class="dash-empty text-center">
+    <div class="mb-3">{{ icon('volunteer') }}</div>
+    <h2 class="h5 fw-bold">No open tasks in your area yet</h2>
+    <p class="text-muted mb-0">Task assignment arrives in a later phase. You will see pickups and deliveries here and update their status as you go.</p>
+  </div>
+
+  <div class="card-soft mt-4">
+    <h2 class="h6 fw-bold mb-3">Volunteer guidance</h2>
+    <ul class="list-unstyled mb-0">
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Wash your hands before handling any food.</span></li>
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Keep chilled food cold until it is delivered.</span></li>
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Collect before the pickup deadline.</span></li>
+      <li class="d-flex align-items-start gap-2">{{ icon('check') }} <span>Confirm the donor and receiver names on the listing.</span></li>
+    </ul>
+  </div>
+{% endblock %}

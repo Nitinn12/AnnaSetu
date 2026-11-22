@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Food safety guidelines{% endblock %}
+{% block content %}
+
+<header class="page-hero">
+  <div class="container">
+    <p class="section__eyebrow">Food safety</p>
+    <h1>Food safety guidelines</h1>
+    <p class="section__lead">Practical guidance for donors and receivers. This is general information, not a certification.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="alert-soft" role="note">
+      <span class="icon" aria-hidden="true">{{ icon("alert") }}</span>
+      <p class="mb-0">AnnaSetu does not certify or guarantee the safety of any food. Always follow your local food-safety rules and use your own judgement before serving or accepting food.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="section__eyebrow">Storage</p>
+    <h2 class="section__title">Storage types</h2>
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="guide-card guide-card--green h-100">
+          <span class="icon" aria-hidden="true">{{ icon("leaf") }}</span>
+          <h3 class="h5">Ambient</h3>
+          <p class="mb-0">Dry, sealed goods kept in a cool, dry place away from direct sunlight.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="guide-card guide-card--orange h-100">
+          <span class="icon" aria-hidden="true">{{ icon("thermometer") }}</span>
+          <h3 class="h5">Chilled</h3>
+          <p class="mb-0">Keep at or below 5 &deg;C where possible; use a cool box with ice packs for transport.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="guide-card guide-card--green h-100">
+          <span class="icon" aria-hidden="true">{{ icon("clock") }}</span>
+          <h3 class="h5">Frozen</h3>
+          <p class="mb-0">Keep frozen until use; do not refreeze thawed food unless it was cooked first.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="container">
+    <p class="section__eyebrow">Timing</p>
+    <h2 class="section__title">Time limits</h2>
+    <div class="table-responsive">
+      <table class="table guide-table align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Situation</th>
+            <th scope="col">General guidance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Cooked food at room temperature</th>
+            <td>Do not leave it out for more than 2 hours; reduce to 1 hour if the room is above 30 &deg;C.</td>
+          </tr>
+          <tr>
+            <th scope="row">Cooling cooked food</th>
+            <td>Cool and refrigerate promptly, in shallow containers, not large pots.</td>
+          </tr>
+          <tr>
+            <th scope="row">Reheating</th>
+            <td>Heat until piping hot throughout; reheat only once.</td>
+          </tr>
+          <tr>
+            <th scope="row">Transport</th>
+            <td>Keep chilled food cold in transit and collect before the pickup deadline on the listing.</td>
+          </tr>
+          <tr>
+            <th scope="row">Pickup deadline</th>
+            <td>Collect only before the deadline on the listing. Do not collect or serve after it.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="section__eyebrow">Labelling</p>
+    <h2 class="section__title">Allergen labelling</h2>
+    <p class="section__lead">Label every listing with the major allergens it may contain, and write 'unknown' when you are not sure.</p>
+    <div>
+      <span class="allergen-chip">Cereals containing gluten</span>
+      <span class="allergen-chip">Crustaceans</span>
+      <span class="allergen-chip">Eggs</span>
+      <span class="allergen-chip">Fish</span>
+      <span class="allergen-chip">Peanuts</span>
+      <span class="allergen-chip">Soybeans</span>
+      <span class="allergen-chip">Milk</span>
+      <span class="allergen-chip">Tree nuts</span>
+      <span class="allergen-chip">Celery</span>
+      <span class="allergen-chip">Mustard</span>
+      <span class="allergen-chip">Sesame seeds</span>
+      <span class="allergen-chip">Sulphites</span>
+      <span class="allergen-chip">Lupin</span>
+      <span class="allergen-chip">Molluscs</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="container">
+    <p class="section__eyebrow">Hygiene</p>
+    <h2 class="section__title">Hygiene basics</h2>
+    <div class="row g-4">
+      <div class="col-12 col-md-6">
+        <div class="card-soft h-100">
+          <p class="mb-0">Wash hands before handling food.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card-soft h-100">
+          <p class="mb-0">Use clean containers and lids.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card-soft h-100">
+          <p class="mb-0">Label each container with its preparation time.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card-soft h-100">
+          <p class="mb-0">Keep raw and cooked food apart.</p>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card-soft h-100">
+          <p class="mb-0">Do not accept food in a damaged or open package when its history is unknown.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page-cta">
+  <div class="container">
+    <h2>Ready to donate or receive food?</h2>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a class="btn-brand" href="{{ url_for('auth.register') }}">Create an account</a>
+      <a class="btn-brand-outline" href="{{ url_for('main.index') }}">Back to home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit donation{% else %}Post food{% endif %}{% endblock %}
+{% block content %}
+{% set fv = form_values or {} %}
+{% if is_edit %}
+  {% set form_action = url_for('donations.edit_donation', donation_id=donation.id) %}
+  {% set submit_label = "Save changes" %}
+{% else %}
+  {% set form_action = url_for('donations.new_donation') %}
+  {% set submit_label = "Post donation" %}
+{% endif %}
+
+<section class="container py-4 py-lg-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+
+      <nav class="mb-3" aria-label="Breadcrumb">
+        <a href="{{ url_for('donations.donate') }}">Your donations</a>
+      </nav>
+
+      <div class="card-soft">
+        <h1 class="h3 fw-bold">{% if is_edit %}Edit donation{% else %}Post food{% endif %}</h1>
+        <p class="form-hint mb-4">Describe the food you have surplus. Receivers nearby will see it once posted.</p>
+
+        <div class="alert-soft mb-4" role="note">
+          Follow the storage and time limits shown. AnnaSetu does not certify food safety.
+        </div>
+
+        <form method="post" action="{{ form_action }}" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="form-field">
+            <label for="title" class="form-label">Food name</label>
+            <input type="text" class="form-control" id="title" name="title" maxlength="120" required value="{{ fv.title or '' }}">
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6 form-field">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="" disabled {% if not fv.category %}selected{% endif %}>Choose a category</option>
+                {% for key, label in categories.items() %}
+                  <option value="{{ key }}" {% if fv.category == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="storage" class="form-label">Storage</label>
+              <select class="form-select" id="storage" name="storage" required>
+                <option value="" disabled {% if not fv.storage %}selected{% endif %}>Choose storage</option>
+                {% for key, label in storage_options.items() %}
+                  <option value="{{ key }}" {% if fv.storage == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="quantity" class="form-label">Quantity</label>
+              <input type="number" class="form-control" id="quantity" name="quantity" step="0.1" min="0.1" required value="{{ fv.quantity or '' }}">
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="unit" class="form-label">Unit</label>
+              <select class="form-select" id="unit" name="unit" required>
+                {% for key, label in unit_options.items() %}
+                  <option value="{{ key }}" {% if (fv.unit or 'kg') == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="servings" class="form-label">Servings (optional)</label>
+              <input type="number" class="form-control" id="servings" name="servings" min="1" step="1" value="{{ fv.servings or '' }}">
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="allergens" class="form-label">Allergens (optional)</label>
+              <input type="text" class="form-control" id="allergens" name="allergens" maxlength="255" value="{{ fv.allergens or '' }}">
+              <p class="form-hint">For example: nuts, dairy, gluten.</p>
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="prepared_at" class="form-label">Prepared at (IST)</label>
+              <input type="datetime-local" class="form-control" id="prepared_at" name="prepared_at" required value="{{ fv.prepared_at or '' }}">
+            </div>
+
+            <div class="col-12 col-md-6 form-field">
+              <label for="pickup_deadline" class="form-label">Pickup deadline (IST)</label>
+              <input type="datetime-local" class="form-control" id="pickup_deadline" name="pickup_deadline" required value="{{ fv.pickup_deadline or '' }}">
+              <p class="form-hint">Must be within 48 hours and after the preparation time.</p>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="pickup_address" class="form-label">Pickup address</label>
+            <input type="text" class="form-control" id="pickup_address" name="pickup_address" maxlength="255" required value="{{ fv.pickup_address or '' }}">
+            <p class="form-hint">Use a general area or landmark, never a home address. Demo data only.</p>
+          </div>
+
+          <div class="form-field">
+            <label for="description" class="form-label">Description (optional)</label>
+            <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000">{{ fv.description or '' }}</textarea>
+          </div>
+
+          <div class="form-field">
+            <label for="image" class="form-label">Photo (optional)</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/png,image/jpeg,image/webp">
+            <p class="form-hint">PNG, JPG or WebP up to 2 MB</p>
+            {% if is_edit and donation and donation.image_filename %}
+              <p class="form-hint">Uploading a new photo replaces the current one.</p>
+            {% endif %}
+          </div>
+
+          <div class="form-actions d-flex flex-wrap gap-2 justify-content-end">
+            <a class="btn-brand-outline" href="{% if is_edit %}{{ url_for('donations.detail', donation_id=donation.id) }}{% else %}{{ url_for('donations.donate') }}{% endif %}">Back</a>
+            <button type="submit" class="btn-brand">{{ submit_label }}</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

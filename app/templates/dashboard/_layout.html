@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block content %}
+{# Role-based navigation. Items: (endpoint, label, icon name, is_soon). Soon items have no endpoint. #}
+{% if current_user.role == 'donor' %}
+  {% set nav_items = [
+    ('donations.donate', 'Overview', 'donate', false),
+    ('impact.impact', 'Impact', 'leaf', false),
+    (none, 'Donation history', 'calendar', true),
+  ] %}
+{% elif current_user.role == 'receiver' %}
+  {% set nav_items = [
+    ('receivers.find_food', 'Overview', 'find', false),
+    ('receivers.my_claims', 'Claims', 'calendar', false),
+    ('impact.impact', 'Impact', 'leaf', false),
+  ] %}
+{% elif current_user.role == 'volunteer' %}
+  {% set nav_items = [
+    ('volunteers.volunteer_home', 'Overview', 'volunteer', false),
+    ('impact.impact', 'Impact', 'leaf', false),
+    (none, 'Tasks', 'calendar', true),
+  ] %}
+{% else %}
+  {% set nav_items = [
+    ('impact.impact', 'Overview', 'dashboard', false),
+    ('volunteers.admin_assignments', 'Assignments', 'volunteer', false),
+  ] %}
+{% endif %}
+
+<div class="container py-4 py-lg-5">
+
+  {# Mobile: horizontal scrollable tabs (hidden on desktop) #}
+  <div class="d-lg-none mb-4">
+    <nav class="dash-tabs" aria-label="Dashboard sections">
+      <ul class="list-unstyled d-flex flex-nowrap gap-2 overflow-auto mb-0 pb-1">
+        {% for endpoint, label, icon_name, soon in nav_items %}
+          {% set is_active = (not soon) and request.endpoint == endpoint %}
+          <li class="flex-shrink-0">
+            {% if soon %}
+              <span class="dash-nav__link text-muted-soft d-inline-flex align-items-center gap-2" aria-disabled="true">
+                {{ icon(icon_name) }}
+                <span>{{ label }}</span>
+                <span class="badge rounded-pill text-bg-light">Soon</span>
+              </span>
+            {% else %}
+              <a class="dash-nav__link d-inline-flex align-items-center gap-2{% if is_active %} is-active{% endif %}" href="{{ url_for(endpoint) }}"{% if is_active %} aria-current="page"{% endif %}>
+                {{ icon(icon_name) }}
+                <span>{{ label }}</span>
+              </a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="dash-layout">
+    {# Desktop: sidebar navigation (hidden on mobile) #}
+    <aside class="dash-sidebar d-none d-lg-block" aria-label="Dashboard navigation">
+      <nav class="dash-nav">
+        <ul class="list-unstyled mb-0">
+          {% for endpoint, label, icon_name, soon in nav_items %}
+            {% set is_active = (not soon) and request.endpoint == endpoint %}
+            <li class="mb-1">
+              {% if soon %}
+                <span class="dash-nav__link text-muted-soft d-flex align-items-center gap-2" aria-disabled="true">
+                  {{ icon(icon_name) }}
+                  <span class="flex-grow-1">{{ label }}</span>
+                  <span class="badge rounded-pill text-bg-light">Soon</span>
+                </span>
+              {% else %}
+                <a class="dash-nav__link d-flex align-items-center gap-2{% if is_active %} is-active{% endif %}" href="{{ url_for(endpoint) }}"{% if is_active %} aria-current="page"{% endif %}>
+                  {{ icon(icon_name) }}
+                  <span>{{ label }}</span>
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="dash-main">
+      <div class="dash-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+          <h1 class="h3 fw-bold mb-0">{% block dash_title %}{% endblock %}</h1>
+        </div>
+        <div class="dash-header__actions">{% block dash_actions %}{% endblock %}</div>
+      </div>
+
+      {% block dash_body %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

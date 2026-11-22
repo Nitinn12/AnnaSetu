@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ title|default("AnnaSetu") }}{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <h1 class="h2 fw-bold">{{ title|default("AnnaSetu") }}</h1>
+    {% if message %}
+      <p class="text-muted mb-0">{{ message }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="container py-4">
+  <div class="page-cta d-flex flex-column flex-sm-row justify-content-center gap-2">
+    <a class="btn-brand" href="{{ url_for('main.index') }}">Back to home</a>
+    <a class="btn-brand-outline" href="{{ url_for('main.food_safety') }}">Food safety guidelines</a>
+  </div>
+</div>
+
+{% endblock %}

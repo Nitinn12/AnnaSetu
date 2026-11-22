@@ -1,0 +1,17 @@
+venv/
+.venv/
+pycache/
+*.py[cod]
+instance/
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+.pytest_cache/
+.codebenders/
+
+pycache/
+
+__pycache__/

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}{{ donation.title }}{% endblock %}
+{% block content %}
+<section class="container py-4 py-lg-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+
+      <nav class="mb-3" aria-label="Breadcrumb">
+        {% if is_owner %}
+          <a href="{{ url_for('donations.donate') }}">&larr; Your donations</a>
+        {% else %}
+          <a href="{{ url_for('main.dashboard') }}">&larr; Dashboard</a>
+        {% endif %}
+      </nav>
+
+      <div class="card-soft mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+          <h1 class="h3 fw-bold mb-0">{{ donation.title }}</h1>
+          <span class="status-pill status-{{ donation.status }}">{{ status_label }}</span>
+        </div>
+
+        <dl class="row mb-0">
+          <dt class="col-sm-4 form-label">Quantity</dt>
+          <dd class="col-sm-8">{{ "%g"|format(donation.quantity) }} {{ unit_labels[donation.unit] }}{% if donation.servings %} &middot; about {{ donation.servings }} servings{% endif %}</dd>
+
+          <dt class="col-sm-4 form-label">Category</dt>
+          <dd class="col-sm-8">{{ category_labels[donation.category] }}</dd>
+
+          <dt class="col-sm-4 form-label">Storage</dt>
+          <dd class="col-sm-8">{{ storage_labels[donation.storage] }}</dd>
+
+          <dt class="col-sm-4 form-label">Prepared</dt>
+          <dd class="col-sm-8">{{ prepared_text }}</dd>
+
+          <dt class="col-sm-4 form-label">Pickup by</dt>
+          <dd class="col-sm-8">{{ deadline_text }}</dd>
+
+          <dt class="col-sm-4 form-label">Pickup zone</dt>
+          <dd class="col-sm-8">{{ donation.pickup_zone }}</dd>
+
+          <dt class="col-sm-4 form-label">Pickup address</dt>
+          <dd class="col-sm-8">{{ donation.pickup_address }}</dd>
+
+          <dt class="col-sm-4 form-label">Allergens</dt>
+          <dd class="col-sm-8">{{ donation.allergens or 'None listed' }}</dd>
+
+          <dt class="col-sm-4 form-label">Description</dt>
+          <dd class="col-sm-8">{{ donation.description or 'No description' }}</dd>
+
+          <dt class="col-sm-4 form-label">Donated by</dt>
+          <dd class="col-sm-8">{{ donation.organization.name }}</dd>
+
+          <dt class="col-sm-4 form-label">Claimed by</dt>
+          <dd class="col-sm-8">{{ claimed_by or 'Not claimed yet' }}</dd>
+
+          <dt class="col-sm-4 form-label">Volunteer</dt>
+          <dd class="col-sm-8">{{ assigned_to or 'No volunteer assigned yet' }}</dd>
+        </dl>
+
+        {% if donation.image_filename %}
+          <div class="mt-4">
+            <img class="thumb" src="{{ url_for('donations.uploaded_image', filename=donation.image_filename) }}" alt="Photo of the donated food">
+          </div>
+        {% endif %}
+
+        {% if can_edit or can_cancel %}
+          <div class="form-actions d-flex flex-wrap gap-2 mt-4">
+            {% if can_edit %}
+              <a class="btn-brand-outline" href="{{ url_for('donations.edit_donation', donation_id=donation.id) }}">Edit donation</a>
+            {% endif %}
+            {% if can_cancel %}
+              <form method="post" action="{{ url_for('donations.cancel_donation', donation_id=donation.id) }}" class="mb-0"
+                    onsubmit="return confirm('Cancel this donation? Any claim will be released.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-brand-outline">Cancel donation</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="card-soft">
+        <h2 class="h5 fw-bold mb-3">Status history</h2>
+        {% if timeline %}
+          <ol class="timeline list-unstyled mb-0">
+            {% for item in timeline %}
+              <li class="timeline__item">
+                <span class="status-pill status-{{ item.status }}">{{ item.status_label }}</span>
+                <p class="mb-1 mt-2">{{ item.text }}</p>
+                {% if item.note %}<p class="form-hint mb-1">{{ item.note }}</p>{% endif %}
+                <p class="form-hint mb-0">
+                  {% if item.role %}By {{ item.role }} &middot; {% endif %}
+                  <time class="timeline__time">{{ item.time }}</time>
+                </p>
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="text-muted mb-0">No status changes recorded yet.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

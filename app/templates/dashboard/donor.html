@@ -1,0 +1,49 @@
+{% extends "dashboard/_layout.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Donor dashboard{% endblock %}
+{% block dash_title %}Your donations{% endblock %}
+{% block dash_actions %}
+  <a class="btn-brand" href="{{ url_for('donations.new_donation') }}">{{ icon('donate') }} <span>Post food</span></a>
+{% endblock %}
+{% block dash_body %}
+  <p class="text-muted mb-4">Signed in as {{ current_user.name }}</p>
+
+  {% set summary = summary or {'open': 0, 'in_delivery': 0, 'delivered': 0} %}
+  <div class="dash-grid mb-4">
+    <div class="dash-stat">
+      <p class="form-hint mb-1">Open donations</p>
+      <p class="h3 fw-bold mb-1">{{ summary.open }}</p>
+      <p class="form-hint mb-0">Posted, claimed or assigned</p>
+    </div>
+    <div class="dash-stat">
+      <p class="form-hint mb-1">In delivery</p>
+      <p class="h3 fw-bold mb-1">{{ summary.in_delivery }}</p>
+      <p class="form-hint mb-0">Assigned or collected</p>
+    </div>
+    <div class="dash-stat">
+      <p class="form-hint mb-1">Delivered</p>
+      <p class="h3 fw-bold mb-1">{{ summary.delivered }}</p>
+      <p class="form-hint mb-0">Reached a receiver</p>
+    </div>
+  </div>
+
+  {% if not current_user.organization_id %}
+    <div class="alert-soft mb-4">
+      Add your organisation before posting food.
+      <a class="fw-semibold" href="{{ url_for('donations.organization_profile') }}">Set up your organisation</a>
+    </div>
+  {% endif %}
+
+  <div class="dash-empty text-center">
+    <div class="mb-3">{{ icon('donate') }}</div>
+    <h2 class="h5 fw-bold">Manage your donations</h2>
+    <p class="text-muted mb-4">See every donation you have posted, with its status: Posted, Claimed, Volunteer assigned, Collected, Delivered.</p>
+    <a class="btn-brand" href="{{ url_for('donations.donate') }}">View all donations</a>
+  </div>
+
+  <div class="card-soft mt-4">
+    <h2 class="h6 fw-bold mb-2">Food safety reminder</h2>
+    <p class="mb-3">Set a pickup deadline on every listing and follow the storage time limits.</p>
+    <a class="fw-semibold" href="{{ url_for('main.food_safety') }}">Read food safety guidelines</a>
+  </div>
+{% endblock %}

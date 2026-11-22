@@ -1,0 +1,25 @@
+{% extends "dashboard/_layout.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}NGO dashboard{% endblock %}
+{% block dash_title %}Your claims{% endblock %}
+{% block dash_actions %}
+  <a class="btn-brand-outline" href="{{ url_for('receivers.find_food') }}">{{ icon('find') }} <span>Browse food</span></a>
+{% endblock %}
+{% block dash_body %}
+  <p class="text-muted mb-4">Signed in as {{ current_user.name }}</p>
+
+  <div class="dash-empty text-center">
+    <div class="mb-3">{{ icon('find') }}</div>
+    <h2 class="h5 fw-bold">No claims yet</h2>
+    <p class="text-muted mb-0">Browse food is coming in the next phase. Your claimed donations, pickup deadlines and safety notes will appear here.</p>
+  </div>
+
+  <div class="card-soft mt-4">
+    <h2 class="h6 fw-bold mb-3">Before you claim</h2>
+    <ul class="list-unstyled mb-0">
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Check the pickup deadline on the listing.</span></li>
+      <li class="d-flex align-items-start gap-2 mb-2">{{ icon('check') }} <span>Check the storage type and allergen labels.</span></li>
+      <li class="d-flex align-items-start gap-2">{{ icon('check') }} <span>Make sure you can collect within the pickup window.</span></li>
+    </ul>
+  </div>
+{% endblock %}

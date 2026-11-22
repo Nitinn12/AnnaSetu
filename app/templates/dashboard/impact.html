@@ -1,0 +1,227 @@
+{% extends "dashboard/_layout.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Impact{% endblock %}
+{% block dash_title %}{{ title }}{% endblock %}
+
+{% macro num(n) %}{{ '{:,}'.format(n) }}{% endmacro %}
+{% macro kg(x) %}{{ '{:,.1f}'.format(x) }} kg{% endmacro %}
+
+{% macro stat(label, value, hint) %}
+  <div class="dash-stat">
+    <p class="form-hint mb-1">{{ label }}</p>
+    <p class="h3 fw-bold mb-1">{{ value }}</p>
+    {% if hint %}<p class="form-hint mb-0">{{ hint }}</p>{% endif %}
+  </div>
+{% endmacro %}
+
+{% macro bars(rows, label_key, mode) %}
+  <ul class="list-unstyled mb-0">
+    {% for row in rows %}
+      <li class="impact-bar">
+        <span class="impact-bar__label">{{ row[label_key] }}</span>
+        <span class="impact-bar__track" aria-hidden="true"><span class="impact-bar__fill" style="width: {{ row.percent }}%"></span></span>
+        <span class="impact-bar__value">{% if mode == 'kg' %}{{ '{:,.1f}'.format(row.kg) }} kg{% else %}{{ row.count }} ({{ row.percent }}%){% endif %}</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro partner_table(rows, heading, empty_text) %}
+  <div class="card-soft mt-4">
+    <h2 class="h6 fw-bold mb-3">{{ heading }}</h2>
+    {% if rows %}
+      <div class="table-responsive">
+        <table class="table-soft table align-middle mb-0">
+          <thead><tr><th scope="col">Organisation</th><th scope="col">Deliveries</th><th scope="col">Food</th></tr></thead>
+          <tbody>
+            {% for row in rows %}
+              <tr><td>{{ row.name }}</td><td>{{ row.deliveries }}</td><td>{{ kg(row.kg) }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">{{ empty_text }}</p>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% block dash_body %}
+  <p class="text-muted mb-3">Signed in as {{ current_user.name }}. Showing: <strong>{{ rng.label }}</strong></p>
+
+  {# Date filter: GET form, so the filtered page can be bookmarked or shared. #}
+  <form method="get" action="{{ url_for('impact.impact') }}" class="card-soft mb-4" aria-label="Filter by date">
+    <div class="row g-3 align-items-end">
+      <div class="col-6 col-md-3">
+        <label for="start" class="form-label">From</label>
+        <input type="date" class="form-control" id="start" name="start" max="{{ today }}" value="{{ rng.start.isoformat() if rng.start else '' }}">
+      </div>
+      <div class="col-6 col-md-3">
+        <label for="end" class="form-label">To</label>
+        <input type="date" class="form-control" id="end" name="end" max="{{ today }}" value="{{ rng.end.isoformat() if rng.end else '' }}">
+      </div>
+      <div class="col-12 col-md-6 d-flex flex-wrap gap-2">
+        <button type="submit" class="btn-brand">Apply</button>
+        {% for label, href in presets %}
+          <a class="btn-brand-outline" href="{{ href }}">{{ label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </form>
+
+  {% for message in rng.errors %}
+    <div class="alert-soft alert-soft--warn mb-3" role="alert">{{ message }}</div>
+  {% endfor %}
+
+  {# ---------------- Admin: whole platform ---------------- #}
+  {% if data.scope == 'admin' %}
+    {% set s = data.summary %}
+    <div class="dash-grid mb-4">
+      {{ stat('Total donations', num(s.total), 'Posted in this period') }}
+      {{ stat('Pending', num(s.pending), 'Posted, waiting for an NGO') }}
+      {{ stat('Claimed', num(s.claimed), 'Claimed, not yet delivered') }}
+      {{ stat('Delivered', num(s.delivered), 'Reached an NGO') }}
+      {{ stat('Expired', num(s.expired), 'Pickup deadline passed') }}
+      {{ stat('Food rescued', kg(s.delivered_kg), 'About ' ~ num(s.estimated_meals) ~ ' meals (estimate)') }}
+    </div>
+
+    <div class="dash-grid mb-4">
+      {{ stat('Active volunteers', num(data.volunteers.engaged), 'Assigned work in this period, of ' ~ num(data.volunteers.accounts) ~ ' active accounts') }}
+      {{ stat('Volunteer deliveries', num(data.volunteers.deliveries), 'Completed in this period') }}
+      {{ stat('NGOs participating', num(data.ngos.claimed), 'Made a claim, of ' ~ num(data.ngos.registered) ~ ' registered') }}
+      {{ stat('NGOs that received food', num(data.ngos.received), 'At least one delivery') }}
+      {{ stat('Donors posting', num(data.donors_posting), 'Organisations that posted food') }}
+    </div>
+
+    <div class="card-soft">
+      <h2 class="h6 fw-bold mb-3">Donations by status</h2>
+      {% if s.total %}
+        {{ bars(s.status_rows, 'label', 'count') }}
+      {% else %}
+        <p class="text-muted mb-0">No donations in this period.</p>
+      {% endif %}
+    </div>
+
+    <div class="card-soft mt-4">
+      <h2 class="h6 fw-bold mb-3">Food delivered by category</h2>
+      {% if data.categories %}
+        {{ bars(data.categories, 'label', 'kg') }}
+      {% else %}
+        <p class="text-muted mb-0">No deliveries in this period yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card-soft mt-4">
+      <h2 class="h6 fw-bold mb-3">NGO participation</h2>
+      {% if data.ngos.top %}
+        <div class="table-responsive">
+          <table class="table-soft table align-middle mb-0">
+            <thead><tr><th scope="col">NGO</th><th scope="col">Claims</th><th scope="col">Deliveries</th><th scope="col">Food received</th></tr></thead>
+            <tbody>
+              {% for n in data.ngos.top %}
+                <tr><td>{{ n.name }}</td><td>{{ n.claims }}</td><td>{{ n.deliveries }}</td><td>{{ kg(n.kg) }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">No NGO claims in this period.</p>
+      {% endif %}
+    </div>
+
+  {# ---------------- Donor: own donations ---------------- #}
+  {% elif data.scope == 'donor' %}
+    {% set s = data.summary %}
+    <div class="dash-grid mb-4">
+      {{ stat('Total donations', num(s.total), 'You posted in this period') }}
+      {{ stat('Pending', num(s.pending), 'Waiting for an NGO') }}
+      {{ stat('Claimed', num(s.claimed), 'Claimed, not yet delivered') }}
+      {{ stat('Delivered', num(s.delivered), 'Reached an NGO') }}
+      {{ stat('Expired', num(s.expired), 'Pickup deadline passed') }}
+      {{ stat('Food rescued', kg(s.delivered_kg), 'About ' ~ num(s.estimated_meals) ~ ' meals (estimate)') }}
+      {{ stat('NGOs helped', num(data.partner_count), 'Received your food') }}
+    </div>
+
+    <div class="card-soft">
+      <h2 class="h6 fw-bold mb-3">Your donations by status</h2>
+      {% if s.total %}
+        {{ bars(s.status_rows, 'label', 'count') }}
+      {% else %}
+        <p class="text-muted mb-0">You have not posted any donations in this period.</p>
+      {% endif %}
+    </div>
+
+    <div class="card-soft mt-4">
+      <h2 class="h6 fw-bold mb-3">Food delivered by category</h2>
+      {% if data.categories %}
+        {{ bars(data.categories, 'label', 'kg') }}
+      {% else %}
+        <p class="text-muted mb-0">No deliveries in this period yet.</p>
+      {% endif %}
+    </div>
+
+    {{ partner_table(data.partners, 'NGOs that received your food', 'No deliveries to NGOs in this period yet.') }}
+
+  {# ---------------- NGO / receiver: own claims ---------------- #}
+  {% elif data.scope == 'receiver' %}
+    {% if data.needs_profile %}
+      <div class="dash-empty text-center">
+        <div class="mb-3">{{ icon('find') }}</div>
+        <h2 class="h5 fw-bold">Add your organisation first</h2>
+        <p class="text-muted mb-4">Your impact is counted per organisation, so we need your organisation profile.</p>
+        <a class="btn-brand" href="{{ url_for('donations.organization_profile') }}">Set up your organisation</a>
+      </div>
+    {% else %}
+      {% set c = data.claims %}
+      <p class="form-hint mb-3">Organisation: {{ data.org_name }}</p>
+      <div class="dash-grid mb-4">
+        {{ stat('Claims made', num(c.made), 'In this period') }}
+        {{ stat('In progress', num(c.in_progress), 'Claimed, assigned or collected') }}
+        {{ stat('Delivered to you', num(c.delivered), 'Food that reached your organisation') }}
+        {{ stat('Expired', num(c.expired), 'Pickup deadline passed') }}
+        {{ stat('Released or cancelled', num(c.released), 'Claim ended before delivery') }}
+        {{ stat('Food received', kg(data.delivered_kg), 'About ' ~ num(data.estimated_meals) ~ ' meals (estimate)') }}
+      </div>
+
+      <div class="card-soft">
+        <h2 class="h6 fw-bold mb-3">Food received by category</h2>
+        {% if data.categories %}
+          {{ bars(data.categories, 'label', 'kg') }}
+        {% else %}
+          <p class="text-muted mb-0">No deliveries in this period yet.</p>
+        {% endif %}
+      </div>
+
+      {{ partner_table(data.partners, 'Donors who supplied you', 'No deliveries from donors in this period yet.') }}
+    {% endif %}
+
+  {# ---------------- Volunteer: own tasks ---------------- #}
+  {% elif data.scope == 'volunteer' %}
+    <div class="dash-grid mb-4">
+      {{ stat('Tasks assigned', num(data.tasks.assigned), 'In this period') }}
+      {{ stat('In progress', num(data.tasks.in_progress), 'Assigned or collected') }}
+      {{ stat('Deliveries completed', num(data.tasks.delivered), 'Reached an NGO') }}
+      {{ stat('Food delivered', kg(data.delivered_kg), 'About ' ~ num(data.estimated_meals) ~ ' meals (estimate)') }}
+    </div>
+
+    <div class="card-soft">
+      <h2 class="h6 fw-bold mb-3">Food delivered by category</h2>
+      {% if data.categories %}
+        {{ bars(data.categories, 'label', 'kg') }}
+      {% else %}
+        <p class="text-muted mb-0">No deliveries in this period yet.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="card-soft mt-4">
+    <h2 class="h6 fw-bold mb-2">How these numbers are calculated</h2>
+    <ul class="small mb-2 ps-3">
+      {% for note in notes %}<li>{{ note }}</li>{% endfor %}
+      <li>Meals are estimates. Portions are converted to kg using the assumptions below.</li>
+      <li>The date filter uses India Standard Time. Donation figures use the day the food was posted, NGO claim figures the day it was claimed, and volunteer figures the day of assignment.</li>
+    </ul>
+    <p class="small text-muted mb-0">Assumptions: {{ ' '.join(assumptions) if assumptions else '' }}</p>
+    <p class="small mb-0 mt-2"><strong>Note:</strong> Figures on the home page are illustrative demo data and are not measured results.</p>
+  </div>
+{% endblock %}
