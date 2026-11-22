@@ -160,10 +160,3 @@ AnnaSetu aims to:
 - Interactive donation maps.
 - Advanced analytics and impact reporting.
 
-## Hackathon
-
-**ACE BUILDERS HACKATHON 2026**
-
-**Problem Statement 2: Rescue the Surplus**
-
-**AnnaSetu — Where Surplus Meets the Hungry.**
