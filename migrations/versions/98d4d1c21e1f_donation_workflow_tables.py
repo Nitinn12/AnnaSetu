@@ -129,7 +129,7 @@ def upgrade():
                nullable=False)
 
     with op.batch_alter_table('user', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.text('1'), nullable=False))
+        batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.true(), nullable=False))
 
     # ### end Alembic commands ###
 
@@ -170,3 +170,4 @@ def downgrade():
 
     op.drop_table('donation')
     # ### end Alembic commands ###
+

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, abort, render_template, request, session
 
 from app.csrf import generate_csrf_token, validate_csrf
+from app.dburl import normalize_database_url
 from app.extensions import db, migrate
 from app.timeutil import format_local
 
@@ -32,7 +33,9 @@ def create_app(test_config=None):
 
     app.config.update(
         SECRET_KEY=secret or "dev-only-change-me",
-        SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL") or default_db,
+        SQLALCHEMY_DATABASE_URI=(
+            normalize_database_url(os.environ.get("DATABASE_URL")) or default_db
+        ),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         GEMINI_API_KEY=os.environ.get("GEMINI_API_KEY", ""),  # unused in phase 1
         SESSION_COOKIE_HTTPONLY=True,
